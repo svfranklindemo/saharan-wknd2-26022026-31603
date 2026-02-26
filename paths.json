@@ -1,22 +1,22 @@
 {
   "mappings": [
-    "/content/wknd-universal/language-masters/en:/",
-    "/content/wknd-universal/language-masters/en/:/en/",
-    "/content/wknd-universal/language-masters/fr/:/fr/",
-    "/content/wknd-universal/language-masters/fr:/fr",
-    "/content/wknd-universal/language-masters/es/:/es/",
-    "/content/wknd-universal/language-masters/es:/es",
-    "/content/wknd-universal/language-masters/ja/:/ja/",
-    "/content/wknd-universal/language-masters/ja:/ja",
-    "/content/wknd-universal/language-masters/de/:/de/",
-    "/content/wknd-universal/language-masters/de:/de",
-    "/content/wknd-universal/configuration:/.helix/config.json",
-    "/content/wknd-universal/metadata:/metadata.json",
-    "/content/wknd-universal/redirects:/redirects.json",
-    "/content/wknd-universal/placeholders:/placeholders.json"
+    "/content/saharan-saharan-2026-2-26-8-46-8/language-masters/en:/",
+    "/content/saharan-saharan-2026-2-26-8-46-8/language-masters/en/:/en/",
+    "/content/saharan-saharan-2026-2-26-8-46-8/language-masters/fr/:/fr/",
+    "/content/saharan-saharan-2026-2-26-8-46-8/language-masters/fr:/fr",
+    "/content/saharan-saharan-2026-2-26-8-46-8/language-masters/es/:/es/",
+    "/content/saharan-saharan-2026-2-26-8-46-8/language-masters/es:/es",
+    "/content/saharan-saharan-2026-2-26-8-46-8/language-masters/ja/:/ja/",
+    "/content/saharan-saharan-2026-2-26-8-46-8/language-masters/ja:/ja",
+    "/content/saharan-saharan-2026-2-26-8-46-8/language-masters/de/:/de/",
+    "/content/saharan-saharan-2026-2-26-8-46-8/language-masters/de:/de",
+    "/content/saharan-saharan-2026-2-26-8-46-8/configuration:/.helix/config.json",
+    "/content/saharan-saharan-2026-2-26-8-46-8/metadata:/metadata.json",
+    "/content/saharan-saharan-2026-2-26-8-46-8/redirects:/redirects.json",
+    "/content/saharan-saharan-2026-2-26-8-46-8/placeholders:/placeholders.json"
   ],
   "includes": [
-    "/content/wknd-universal/",
-    "/content/dam/wknd-universal/"
+    "/content/saharan-saharan-2026-2-26-8-46-8/",
+    "/content/dam/saharan-saharan-2026-2-26-8-46-8/"
   ]
 }
