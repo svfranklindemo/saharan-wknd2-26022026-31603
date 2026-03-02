@@ -39,6 +39,12 @@ function emptyAsBlank(val) {
   return String(val).trim();
 }
 
+/** Get value from block config; keys may be hyphenated (product-id) or underscore (product_id). */
+function getConfig(config, key) {
+  const hyphenated = key.replace(/_/g, '-');
+  return config[key] ?? config[hyphenated] ?? '';
+}
+
 /**
  * @param {Element} block
  */
@@ -46,15 +52,15 @@ export default function decorate(block) {
   const config = readBlockConfig(block);
   const descriptionHtml = getDescriptionHtml(block);
 
-  const productId = emptyAsBlank(config.product_id);
-  const modelName = emptyAsBlank(config.model_name);
-  const bodyType = emptyAsBlank(config.body_type);
-  const fuelType = emptyAsBlank(config.fuel_type);
-  const comfortLevel = emptyAsBlank(config.comfort_level);
-  const priceRangeTag = emptyAsBlank(config.price_range_tag);
-  const imageUrl = emptyAsBlank(config.image_url);
-  const description = descriptionHtml || emptyAsBlank(config.description);
-  const color = emptyAsBlank(config.color);
+  const productId = emptyAsBlank(getConfig(config, 'product_id'));
+  const modelName = emptyAsBlank(getConfig(config, 'model_name'));
+  const bodyType = emptyAsBlank(getConfig(config, 'body_type'));
+  const fuelType = emptyAsBlank(getConfig(config, 'fuel_type'));
+  const comfortLevel = emptyAsBlank(getConfig(config, 'comfort_level'));
+  const priceRangeTag = emptyAsBlank(getConfig(config, 'price_range_tag'));
+  const imageUrl = emptyAsBlank(getConfig(config, 'image_url'));
+  const description = descriptionHtml || emptyAsBlank(getConfig(config, 'description'));
+  const color = emptyAsBlank(getConfig(config, 'color'));
 
   const specRows = [
     specRow('Body type', bodyType),
