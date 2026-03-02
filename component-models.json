@@ -712,7 +712,7 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "product_id",
+        "name": "productId",
         "label": "Product ID",
         "value": "",
         "description": "Unique identifier for the vehicle model"
@@ -720,7 +720,7 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "model_name",
+        "name": "modelName",
         "label": "Model Name",
         "value": "",
         "description": "Display name of the car model"
@@ -728,7 +728,7 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "body_type",
+        "name": "bodyType",
         "label": "Body Type",
         "value": "",
         "description": "e.g. Sedan, SUV, Hatchback, Coupe"
@@ -736,7 +736,7 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "fuel_type",
+        "name": "fuelType",
         "label": "Fuel Type",
         "value": "",
         "description": "e.g. Petrol, Diesel, Electric, Hybrid"
@@ -744,7 +744,7 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "comfort_level",
+        "name": "comfortLevel",
         "label": "Comfort Level",
         "value": "",
         "description": "e.g. Standard, Premium, Luxury"
@@ -752,7 +752,7 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "price_range_tag",
+        "name": "priceRangeTag",
         "label": "Price Range Tag",
         "value": "",
         "description": "e.g. From $25,000 or Price on Request"
@@ -760,7 +760,7 @@
       {
         "component": "reference",
         "valueType": "string",
-        "name": "image_url",
+        "name": "imageUrl",
         "label": "Image",
         "multi": false,
         "description": "Main image for the vehicle model"
