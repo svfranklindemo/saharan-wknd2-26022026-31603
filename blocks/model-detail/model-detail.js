@@ -34,6 +34,11 @@ function specRow(label, value) {
   );
 }
 
+function emptyAsBlank(val) {
+  if (val == null || val === '' || String(val).toLowerCase() === 'null' || String(val).toLowerCase() === 'undefined') return '';
+  return String(val).trim();
+}
+
 /**
  * @param {Element} block
  */
@@ -41,15 +46,15 @@ export default function decorate(block) {
   const config = readBlockConfig(block);
   const descriptionHtml = getDescriptionHtml(block);
 
-  const productId = config.product_id ?? '';
-  const modelName = config.model_name ?? '';
-  const bodyType = config.body_type ?? '';
-  const fuelType = config.fuel_type ?? '';
-  const comfortLevel = config.comfort_level ?? '';
-  const priceRangeTag = config.price_range_tag ?? '';
-  const imageUrl = config.image_url ?? '';
-  const description = descriptionHtml || config.description || '';
-  const color = config.color ?? '';
+  const productId = emptyAsBlank(config.product_id);
+  const modelName = emptyAsBlank(config.model_name);
+  const bodyType = emptyAsBlank(config.body_type);
+  const fuelType = emptyAsBlank(config.fuel_type);
+  const comfortLevel = emptyAsBlank(config.comfort_level);
+  const priceRangeTag = emptyAsBlank(config.price_range_tag);
+  const imageUrl = emptyAsBlank(config.image_url);
+  const description = descriptionHtml || emptyAsBlank(config.description);
+  const color = emptyAsBlank(config.color);
 
   const specRows = [
     specRow('Body type', bodyType),
