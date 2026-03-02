@@ -60,13 +60,14 @@ const KEY_ALIASES = {
   imageUrl: 'imageUrl',
 };
 
-/** Get value from block config; keys may be hyphenated (product-id), underscore (productId), or camelCase (productId). */
+/** Get value from block config. Keys from readBlockConfig use toClassName() so camelCase labels become lowercase (e.g. productId -> productid). */
 function getConfig(config, key) {
   const alias = KEY_ALIASES[key];
   const baseKey = alias || key;
   const hyphenated = baseKey.replace(/_/g, '-');
   const camel = toCamelCase(baseKey.replace(/_/g, '-'));
-  const raw = config[baseKey] ?? config[hyphenated] ?? config[camel] ?? config[key] ?? '';
+  const lower = (camel || baseKey).toLowerCase();
+  const raw = config[baseKey] ?? config[hyphenated] ?? config[camel] ?? config[lower] ?? config[key] ?? '';
   return Array.isArray(raw) ? (raw[0] ?? '') : raw;
 }
 
