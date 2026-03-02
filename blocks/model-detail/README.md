@@ -1,6 +1,6 @@
 # Model Detail Block
 
-Car model detail block with authoring fields: product_id, model_name, body_type, fuel_type, comfort_level, price_range_tag, image_url, description, color.
+Car model detail block with authoring fields: productId, modelName, bodyType, fuelType, comfortLevel, priceRangeTag, imageUrl, description, color.
 
 ## If authoring fields don’t show in Universal Editor
 
@@ -13,4 +13,4 @@ The editor loads `component-definition.json` and `component-models.json` from yo
    `npm run build:json`  
    Then commit and deploy the updated `component-models.json` and `component-definition.json` if your setup uses the built files.
 
-The block reads values from both key-value config and row order (row 1 = product_id, row 2 = model_name, …), so it works with different content structures.
+The block reads values from both key-value config and row order (row 1 = productId, row 2 = modelName, …), so it works with different content structures.

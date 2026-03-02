@@ -49,18 +49,18 @@ function toKey(str) {
     .replace(/^-|-$/g, '');
 }
 
-/** toCamelCase for key matching (e.g. product_id -> productId). */
+/** toCamelCase for key matching (e.g. productId -> productId). */
 function toCamelCase(str) {
   return str.replace(/-([a-z])/g, (_, c) => c.toUpperCase()).replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 }
 
 /** Key aliases: other names the editor/source might use for the same field. */
 const KEY_ALIASES = {
-  image: 'image_url',
-  image_url: 'image_url',
+  image: 'imageUrl',
+  imageUrl: 'imageUrl',
 };
 
-/** Get value from block config; keys may be hyphenated (product-id), underscore (product_id), or camelCase (productId). */
+/** Get value from block config; keys may be hyphenated (product-id), underscore (productId), or camelCase (productId). */
 function getConfig(config, key) {
   const alias = KEY_ALIASES[key];
   const baseKey = alias || key;
@@ -70,7 +70,7 @@ function getConfig(config, key) {
   return Array.isArray(raw) ? (raw[0] ?? '') : raw;
 }
 
-/** Get value from row by 1-based index (row 1 = product_id, row 2 = model_name, ...). */
+/** Get value from row by 1-based index (row 1 = productId, row 2 = modelName, ...). */
 function getValueFromRow(block, rowIndex) {
   const row = block.querySelector(`:scope > div:nth-child(${rowIndex})`);
   if (!row || !row.children || row.children.length < 2) return '';
@@ -103,12 +103,12 @@ function getCellValue(valueCell, fieldKey) {
 
 /** Field order for position-based reading (must match model field order and modelFields in JCR). */
 const FIELD_ORDER = [
-  'product_id', 'model_name', 'body_type', 'fuel_type', 'comfort_level',
-  'price_range_tag', 'image_url', 'description', 'color',
+  'productId', 'modelName', 'bodyType', 'fuelType', 'comfortLevel',
+  'priceRangeTag', 'imageUrl', 'description', 'color',
 ];
 
 /**
- * Normalize a raw object (e.g. from JSON) to our config keys (hyphenated). Handles product_id, product-id, productId.
+ * Normalize a raw object (e.g. from JSON) to our config keys (hyphenated). Handles productId, product-id, productId.
  */
 function objectToConfig(obj) {
   if (!obj || typeof obj !== 'object') return {};
@@ -178,7 +178,7 @@ async function tryFetchBlockDataFromPage(block) {
       const blocks = sec.model_detail ?? sec.modelDetail ?? sec['model-detail'] ?? sec.block;
       const blockArr = Array.isArray(blocks) ? blocks : (blocks ? [blocks] : []);
       for (const b of blockArr) {
-        if (b && typeof b === 'object' && (b.product_id != null || b.model_name != null || b.productId != null)) {
+        if (b && typeof b === 'object' && (b.productId != null || b.modelName != null || b.productId != null)) {
           return objectToConfig(b);
         }
       }
@@ -191,7 +191,7 @@ async function tryFetchBlockDataFromPage(block) {
 
 /**
  * Read config from AEM/Universal Editor rendered block (JCR properties as data-aue-prop).
- * Same pattern as tabs and hero: elements with data-aue-prop="product_id" etc. hold the value.
+ * Same pattern as tabs and hero: elements with data-aue-prop="productId" etc. hold the value.
  * @param {Element} block
  * @returns {Record<string, string>}
  */
@@ -307,13 +307,13 @@ function renderBlock(block, config, descriptionHtml) {
   const isKeyValueConfig = hasKnownKey;
   const pick = (key, posIndex) => (isKeyValueConfig ? getConfig(config, key) : (getConfig(config, key) || byPosition[posIndex]));
 
-  const productId = emptyAsBlank(pick('product_id', 0));
-  const modelName = emptyAsBlank(pick('model_name', 1));
-  const bodyType = emptyAsBlank(pick('body_type', 2));
-  const fuelType = emptyAsBlank(pick('fuel_type', 3));
-  const comfortLevel = emptyAsBlank(pick('comfort_level', 4));
-  const priceRangeTag = emptyAsBlank(pick('price_range_tag', 5));
-  const imageUrl = emptyAsBlank(pick('image_url', 6));
+  const productId = emptyAsBlank(pick('productId', 0));
+  const modelName = emptyAsBlank(pick('modelName', 1));
+  const bodyType = emptyAsBlank(pick('bodyType', 2));
+  const fuelType = emptyAsBlank(pick('fuelType', 3));
+  const comfortLevel = emptyAsBlank(pick('comfortLevel', 4));
+  const priceRangeTag = emptyAsBlank(pick('priceRangeTag', 5));
+  const imageUrl = emptyAsBlank(pick('imageUrl', 6));
   const description = descriptionHtml || emptyAsBlank(pick('description', 7));
   let color = emptyAsBlank(pick('color', 8));
   if (color && color.includes('#')) {

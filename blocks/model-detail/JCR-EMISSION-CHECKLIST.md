@@ -41,7 +41,7 @@ Below are the most likely reasons and what to check.
 - Open the block node, e.g.  
   `.../root/section/model_detail`
 - Check the **`modelFields`** property (or similar). It should list all 9 names:  
-  `product_id`, `model_name`, `body_type`, `fuel_type`, `comfort_level`, `price_range_tag`, `image_url`, `description`, `color`
+  `productId`, `modelName`, `bodyType`, `fuelType`, `comfortLevel`, `priceRangeTag`, `imageUrl`, `description`, `color`
 - If it only lists two (e.g. `description`, `color`), that can explain only two rows in HTML. Fix by re-adding the block (see §1) or by correcting `modelFields` and re-publishing if your setup allows.
 
 ---
