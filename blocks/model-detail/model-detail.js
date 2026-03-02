@@ -112,16 +112,19 @@ export default function decorate(block) {
     })()
     : null;
 
+  // Build content children; never pass null/undefined (dom-helpers would render "null" as text)
+  const contentChildren = [
+    productId ? span({ class: 'model-detail-product-id' }, productId) : null,
+    modelName ? h2({ class: 'model-detail-title' }, modelName) : null,
+    priceRangeTag ? p({ class: 'model-detail-price' }, priceRangeTag) : null,
+    specRows.length ? div({ class: 'model-detail-specs' }, ...specRows) : null,
+    descriptionBlock,
+  ].filter((el) => el != null);
+
   const wrapper = div({ class: 'model-detail-wrapper' },
     div({ class: 'model-detail-main' },
       div({ class: 'model-detail-media' }, imageBlock),
-      div({ class: 'model-detail-content' },
-        productId ? span({ class: 'model-detail-product-id' }, productId) : null,
-        modelName ? h2({ class: 'model-detail-title' }, modelName) : null,
-        priceRangeTag ? p({ class: 'model-detail-price' }, priceRangeTag) : null,
-        specRows.length ? div({ class: 'model-detail-specs' }, ...specRows) : null,
-        descriptionBlock,
-      ),
+      div({ class: 'model-detail-content' }, ...contentChildren),
     ),
   );
 
