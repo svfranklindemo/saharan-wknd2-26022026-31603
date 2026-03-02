@@ -498,6 +498,7 @@
         {
           "title": "Model Detail",
           "id": "model-detail",
+          "model": "model-detail",
           "plugins": {
             "xwalk": {
               "page": {

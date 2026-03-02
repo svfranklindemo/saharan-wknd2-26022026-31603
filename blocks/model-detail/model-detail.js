@@ -45,6 +45,26 @@ function getConfig(config, key) {
   return config[key] ?? config[hyphenated] ?? '';
 }
 
+/** Get value from row by 1-based index (row 1 = product_id, row 2 = model_name, ...). */
+function getValueFromRow(block, rowIndex) {
+  const row = block.querySelector(`:scope > div:nth-child(${rowIndex})`);
+  if (!row || !row.children || row.children.length < 2) return '';
+  const valueCell = row.children[1];
+  const anchor = valueCell.querySelector('a');
+  const img = valueCell.querySelector('img');
+  const p = valueCell.querySelector('p');
+  if (anchor) return anchor.href || '';
+  if (img) return img.src || '';
+  if (p) return p.textContent?.trim() || '';
+  return valueCell.textContent?.trim() || '';
+}
+
+/** Field order for position-based reading (must match model field order). */
+const FIELD_ORDER = [
+  'product_id', 'model_name', 'body_type', 'fuel_type', 'comfort_level',
+  'price_range_tag', 'image_url', 'description', 'color',
+];
+
 /**
  * @param {Element} block
  */
@@ -52,15 +72,17 @@ export default function decorate(block) {
   const config = readBlockConfig(block);
   const descriptionHtml = getDescriptionHtml(block);
 
-  const productId = emptyAsBlank(getConfig(config, 'product_id'));
-  const modelName = emptyAsBlank(getConfig(config, 'model_name'));
-  const bodyType = emptyAsBlank(getConfig(config, 'body_type'));
-  const fuelType = emptyAsBlank(getConfig(config, 'fuel_type'));
-  const comfortLevel = emptyAsBlank(getConfig(config, 'comfort_level'));
-  const priceRangeTag = emptyAsBlank(getConfig(config, 'price_range_tag'));
-  const imageUrl = emptyAsBlank(getConfig(config, 'image_url'));
-  const description = descriptionHtml || emptyAsBlank(getConfig(config, 'description'));
-  const color = emptyAsBlank(getConfig(config, 'color'));
+  const byPosition = FIELD_ORDER.map((_, i) => getValueFromRow(block, i + 1));
+
+  const productId = emptyAsBlank(getConfig(config, 'product_id') || byPosition[0]);
+  const modelName = emptyAsBlank(getConfig(config, 'model_name') || byPosition[1]);
+  const bodyType = emptyAsBlank(getConfig(config, 'body_type') || byPosition[2]);
+  const fuelType = emptyAsBlank(getConfig(config, 'fuel_type') || byPosition[3]);
+  const comfortLevel = emptyAsBlank(getConfig(config, 'comfort_level') || byPosition[4]);
+  const priceRangeTag = emptyAsBlank(getConfig(config, 'price_range_tag') || byPosition[5]);
+  const imageUrl = emptyAsBlank(getConfig(config, 'image_url') || byPosition[6]);
+  const description = descriptionHtml || emptyAsBlank(getConfig(config, 'description') || byPosition[7]);
+  const color = emptyAsBlank(getConfig(config, 'color') || byPosition[8]);
 
   const specRows = [
     specRow('Body type', bodyType),
