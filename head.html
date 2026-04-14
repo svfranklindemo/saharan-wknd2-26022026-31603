@@ -38,10 +38,11 @@
 
 window["alloy"]("sendEvent",{}).then(result => {
     console.log("Conversation experience fetched", result);
-    window["alloy"]("bootstrapConversationalExperience", {
-        selector: "#brand-concierge-mount",
-        stylingConfigurations: window.styleConfiguration,
-        stickySession: false // create a sticky session cookie with expiration
-    })
+    window.adobe.concierge.bootstrap({
+      instanceName: "alloy",
+      stylingConfigurations: window.styleConfiguration,
+      selector: "#brand-concierge-mount",
+      stickySession: false
+    });
 });
 </script>
