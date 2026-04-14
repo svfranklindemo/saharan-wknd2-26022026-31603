@@ -33,3 +33,32 @@ main .section:has(#brand-concierge-mount) {
 #brand-concierge-mount .brand-concierge-container.initial-state .input-section {
   padding-bottom: var(--spacing-sm, 8px);
 }
+
+/*
+  EDS global `button` rule (styles.css) sets overflow:hidden + nowrap + ellipsis.
+  Brand Concierge does not override those, so suggested prompt chips get clipped on the EDS site.
+*/
+#brand-concierge-mount button.bc-prompt-suggestion-button,
+#brand-concierge-mount button.bc-prompt-pill-button {
+  display: inline-flex;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
+  word-break: break-word;
+  max-width: min(var(--prompt-suggestions-button-width, 300px), 100%);
+  align-items: center;
+}
+
+#brand-concierge-mount .bc-prompt-suggestion-button__text {
+  min-width: 0;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.4;
+}
+
+#brand-concierge-mount .prompt-suggestions-container {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
