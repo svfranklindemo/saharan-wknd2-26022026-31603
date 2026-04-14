@@ -6863,5 +6863,9 @@
         "condition": { "==": [{ "var": "enableSubmitAction" }, true] }
       }
     ]
+  },
+  {
+    "id": "brandconcierge",
+    "fields": []
   }
 ]
