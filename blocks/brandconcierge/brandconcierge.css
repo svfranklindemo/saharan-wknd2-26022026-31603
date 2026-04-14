@@ -1,0 +1,35 @@
+/* Brand Concierge embedded in EDS: fix disclaimer/input overlap and bottom clipping.
+   The widget pins .disclaimer-bottom-page with position:absolute; bottom:0 on .brand-concierge-container,
+   which takes the disclaimer out of flow and can overlap the input bar when height isn't a full isolated 100vh. */
+
+#brand-concierge-mount {
+  box-sizing: border-box;
+  /* Fill the viewport below the fixed site header so flex centering and bottom chrome fit. */
+  min-height: calc(100dvh - var(--nav-height));
+  min-height: calc(100vh - var(--nav-height));
+  overflow: visible;
+}
+
+main .section:has(#brand-concierge-mount) {
+  overflow: visible;
+}
+
+.brandconcierge-wrapper {
+  overflow: visible;
+}
+
+/* Keep the AI disclaimer in normal flow so it sits below the input bar instead of over it. */
+#brand-concierge-mount .brand-concierge-container.initial-state .disclaimer-bottom-page {
+  position: relative;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  width: 100%;
+  margin-top: var(--disclaimer-margin-top, 16px);
+  margin-bottom: var(--disclaimer-margin-bottom, 16px);
+}
+
+/* Reserve space at the bottom of the input stack when in welcome state. */
+#brand-concierge-mount .brand-concierge-container.initial-state .input-section {
+  padding-bottom: var(--spacing-sm, 8px);
+}
