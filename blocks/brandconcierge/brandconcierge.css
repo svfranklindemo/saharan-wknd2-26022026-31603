@@ -19,8 +19,7 @@
 }
 
 main .section:has(#brand-concierge-mount) {
-  /* Let the block use a full viewport column; section top spacing would stack above 100dvh and force page scroll. */
-  padding-top: 0;
+  /* Keep editor-configured top spacing (e.g. section-xhuge) so welcome copy stays below fixed header. */
   padding-bottom: var(--spacing-medium, 2rem);
   overflow: hidden;
   min-height: 0;
