@@ -12,10 +12,12 @@
   fills the viewport below the nav, that extra padding stacks and lengthens the document — the
   window becomes the scroll parent again and “scroll to latest” jumps the page.
 
-  So: no top padding on the section; put the same inset INSIDE #brand-concierge-mount (border-box)
+  So: no top padding on the section; put the same inset INSIDE #brand-concierge-mount.brandconcierge (border-box)
   so the welcome UI still clears the fixed header while scroll stays inside the mount.
 */
-#brand-concierge-mount {
+/* Injected BC widget CSS uses `#brand-concierge-mount { ... }` and loads after this file; same ID-only
+   specificity wins by order and strips padding/height. Adding `.brandconcierge` raises specificity so these rules win. */
+#brand-concierge-mount.brandconcierge {
   box-sizing: border-box;
   padding-top: var(--brandconcierge-top-inset, var(--spacing-xhuge));
   scroll-padding-top: var(--brandconcierge-top-inset, var(--spacing-xhuge));
@@ -28,7 +30,7 @@
   overscroll-behavior-y: contain;
 }
 
-main .section:has(#brand-concierge-mount) {
+main .section:has(#brand-concierge-mount.brandconcierge) {
   padding-top: 0 !important;
   padding-bottom: var(--spacing-medium, 2rem);
   overflow: hidden;
@@ -36,55 +38,55 @@ main .section:has(#brand-concierge-mount) {
 }
 
 /* Mirror section top spacing into --brandconcierge-top-inset (see comment above). */
-main .section[data-sec-spacing="section-none"]:has(#brand-concierge-mount) {
+main .section[data-sec-spacing="section-none"]:has(#brand-concierge-mount.brandconcierge) {
   --brandconcierge-top-inset: var(--spacing-none);
 }
 
-main .section[data-sec-spacing="section-xtiny"]:has(#brand-concierge-mount) {
+main .section[data-sec-spacing="section-xtiny"]:has(#brand-concierge-mount.brandconcierge) {
   --brandconcierge-top-inset: var(--spacing-xtiny);
 }
 
-main .section[data-sec-spacing="section-tiny"]:has(#brand-concierge-mount) {
+main .section[data-sec-spacing="section-tiny"]:has(#brand-concierge-mount.brandconcierge) {
   --brandconcierge-top-inset: var(--spacing-tiny);
 }
 
-main .section[data-sec-spacing="section-xxsmall"]:has(#brand-concierge-mount) {
+main .section[data-sec-spacing="section-xxsmall"]:has(#brand-concierge-mount.brandconcierge) {
   --brandconcierge-top-inset: var(--spacing-xxsmall);
 }
 
-main .section[data-sec-spacing="section-xsmall"]:has(#brand-concierge-mount) {
+main .section[data-sec-spacing="section-xsmall"]:has(#brand-concierge-mount.brandconcierge) {
   --brandconcierge-top-inset: var(--spacing-xsmall);
 }
 
-main .section[data-sec-spacing="section-regular"]:has(#brand-concierge-mount) {
+main .section[data-sec-spacing="section-regular"]:has(#brand-concierge-mount.brandconcierge) {
   --brandconcierge-top-inset: var(--spacing-regular);
 }
 
-main .section[data-sec-spacing="section-small"]:has(#brand-concierge-mount) {
+main .section[data-sec-spacing="section-small"]:has(#brand-concierge-mount.brandconcierge) {
   --brandconcierge-top-inset: var(--spacing-small);
 }
 
-main .section[data-sec-spacing="section-medium"]:has(#brand-concierge-mount) {
+main .section[data-sec-spacing="section-medium"]:has(#brand-concierge-mount.brandconcierge) {
   --brandconcierge-top-inset: var(--spacing-medium);
 }
 
-main .section[data-sec-spacing="section-large"]:has(#brand-concierge-mount) {
+main .section[data-sec-spacing="section-large"]:has(#brand-concierge-mount.brandconcierge) {
   --brandconcierge-top-inset: var(--spacing-large);
 }
 
-main .section[data-sec-spacing="section-xlarge"]:has(#brand-concierge-mount) {
+main .section[data-sec-spacing="section-xlarge"]:has(#brand-concierge-mount.brandconcierge) {
   --brandconcierge-top-inset: var(--spacing-xlarge);
 }
 
-main .section[data-sec-spacing="section-xxlarge"]:has(#brand-concierge-mount) {
+main .section[data-sec-spacing="section-xxlarge"]:has(#brand-concierge-mount.brandconcierge) {
   --brandconcierge-top-inset: var(--spacing-xxlarge);
 }
 
-main .section[data-sec-spacing="section-huge"]:has(#brand-concierge-mount) {
+main .section[data-sec-spacing="section-huge"]:has(#brand-concierge-mount.brandconcierge) {
   --brandconcierge-top-inset: var(--spacing-huge);
 }
 
-main .section[data-sec-spacing="section-xhuge"]:has(#brand-concierge-mount) {
+main .section[data-sec-spacing="section-xhuge"]:has(#brand-concierge-mount.brandconcierge) {
   --brandconcierge-top-inset: var(--spacing-xhuge);
 }
 
@@ -95,7 +97,7 @@ main .section[data-sec-spacing="section-xhuge"]:has(#brand-concierge-mount) {
 }
 
 /* Keep the AI disclaimer in normal flow so it sits below the input bar instead of over it. */
-#brand-concierge-mount .brand-concierge-container.initial-state .disclaimer-bottom-page {
+#brand-concierge-mount.brandconcierge .brand-concierge-container.initial-state .disclaimer-bottom-page {
   position: relative;
   bottom: auto;
   left: auto;
@@ -106,7 +108,7 @@ main .section[data-sec-spacing="section-xhuge"]:has(#brand-concierge-mount) {
 }
 
 /* Reserve space at the bottom of the input stack when in welcome state. */
-#brand-concierge-mount .brand-concierge-container.initial-state .input-section {
+#brand-concierge-mount.brandconcierge .brand-concierge-container.initial-state .input-section {
   padding-bottom: var(--spacing-sm, 8px);
 }
 
@@ -114,8 +116,8 @@ main .section[data-sec-spacing="section-xhuge"]:has(#brand-concierge-mount) {
   EDS global `button` rule (styles.css) sets overflow:hidden + nowrap + ellipsis.
   Brand Concierge does not override those, so suggested prompt chips get clipped on the EDS site.
 */
-#brand-concierge-mount button.bc-prompt-suggestion-button,
-#brand-concierge-mount button.bc-prompt-pill-button {
+#brand-concierge-mount.brandconcierge button.bc-prompt-suggestion-button,
+#brand-concierge-mount.brandconcierge button.bc-prompt-pill-button {
   display: inline-flex;
   overflow: visible;
   text-overflow: unset;
@@ -125,7 +127,7 @@ main .section[data-sec-spacing="section-xhuge"]:has(#brand-concierge-mount) {
   align-items: center;
 }
 
-#brand-concierge-mount .bc-prompt-suggestion-button__text {
+#brand-concierge-mount.brandconcierge .bc-prompt-suggestion-button__text {
   min-width: 0;
   white-space: normal;
   overflow: visible;
@@ -133,7 +135,7 @@ main .section[data-sec-spacing="section-xhuge"]:has(#brand-concierge-mount) {
   line-height: 1.4;
 }
 
-#brand-concierge-mount .prompt-suggestions-container {
+#brand-concierge-mount.brandconcierge .prompt-suggestions-container {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
