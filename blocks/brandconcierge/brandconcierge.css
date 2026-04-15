@@ -7,8 +7,18 @@
   With only min-height + overflow:visible, chat history grows the page: the browser becomes
   the scroll container, so “scroll to bottom” jumps the window past the conversation.
 */
+/*
+  Section `data-sec-spacing` top padding sits OUTSIDE this node. With a fixed-height mount that
+  fills the viewport below the nav, that extra padding stacks and lengthens the document — the
+  window becomes the scroll parent again and “scroll to latest” jumps the page.
+
+  So: no top padding on the section; put the same inset INSIDE #brand-concierge-mount (border-box)
+  so the welcome UI still clears the fixed header while scroll stays inside the mount.
+*/
 #brand-concierge-mount {
   box-sizing: border-box;
+  padding-top: var(--brandconcierge-top-inset, var(--spacing-xhuge));
+  scroll-padding-top: var(--brandconcierge-top-inset, var(--spacing-xhuge));
   height: calc(100vh - var(--nav-height));
   height: calc(100dvh - var(--nav-height));
   max-height: calc(100vh - var(--nav-height));
@@ -19,10 +29,63 @@
 }
 
 main .section:has(#brand-concierge-mount) {
-  /* Keep editor-configured top spacing (e.g. section-xhuge) so welcome copy stays below fixed header. */
+  padding-top: 0 !important;
   padding-bottom: var(--spacing-medium, 2rem);
   overflow: hidden;
   min-height: 0;
+}
+
+/* Mirror section top spacing into --brandconcierge-top-inset (see comment above). */
+main .section[data-sec-spacing="section-none"]:has(#brand-concierge-mount) {
+  --brandconcierge-top-inset: var(--spacing-none);
+}
+
+main .section[data-sec-spacing="section-xtiny"]:has(#brand-concierge-mount) {
+  --brandconcierge-top-inset: var(--spacing-xtiny);
+}
+
+main .section[data-sec-spacing="section-tiny"]:has(#brand-concierge-mount) {
+  --brandconcierge-top-inset: var(--spacing-tiny);
+}
+
+main .section[data-sec-spacing="section-xxsmall"]:has(#brand-concierge-mount) {
+  --brandconcierge-top-inset: var(--spacing-xxsmall);
+}
+
+main .section[data-sec-spacing="section-xsmall"]:has(#brand-concierge-mount) {
+  --brandconcierge-top-inset: var(--spacing-xsmall);
+}
+
+main .section[data-sec-spacing="section-regular"]:has(#brand-concierge-mount) {
+  --brandconcierge-top-inset: var(--spacing-regular);
+}
+
+main .section[data-sec-spacing="section-small"]:has(#brand-concierge-mount) {
+  --brandconcierge-top-inset: var(--spacing-small);
+}
+
+main .section[data-sec-spacing="section-medium"]:has(#brand-concierge-mount) {
+  --brandconcierge-top-inset: var(--spacing-medium);
+}
+
+main .section[data-sec-spacing="section-large"]:has(#brand-concierge-mount) {
+  --brandconcierge-top-inset: var(--spacing-large);
+}
+
+main .section[data-sec-spacing="section-xlarge"]:has(#brand-concierge-mount) {
+  --brandconcierge-top-inset: var(--spacing-xlarge);
+}
+
+main .section[data-sec-spacing="section-xxlarge"]:has(#brand-concierge-mount) {
+  --brandconcierge-top-inset: var(--spacing-xxlarge);
+}
+
+main .section[data-sec-spacing="section-huge"]:has(#brand-concierge-mount) {
+  --brandconcierge-top-inset: var(--spacing-huge);
+}
+
+main .section[data-sec-spacing="section-xhuge"]:has(#brand-concierge-mount) {
+  --brandconcierge-top-inset: var(--spacing-xhuge);
 }
 
 .brandconcierge-wrapper {
