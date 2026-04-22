@@ -1,5 +1,5 @@
 window.styleConfiguration = {
-  "metadata": {
+ "metadata": {
     "brandName": "carvelo",
     "version": "1.0.0",
     "language": "en-US",
@@ -22,7 +22,7 @@ window.styleConfiguration = {
     },
     "privacyNotice": {
       "title": "Privacy Notice",
-      "text": "Your use of this automated chatbot constitutes your consent that the personal information you provide in the chat session \n      can be collected, used, disclosed, and retained by carveiq and service providers acting on carveiq's behalf \n      in accordance with the carveiq {Privacy Policy}. Please do not provide sensitive personal information \n      (such as financial or health information) in the chatbot.",
+      "text": "Your use of this automated chatbot constitutes your consent that the personal information you provide in the chat session \n      can be collected, used, disclosed, and retained by carvelo and service providers acting on carvelo's behalf \n      in accordance with the carvelo {Privacy Policy}. Please do not provide sensitive personal information \n      (such as financial or health information) in the chatbot.",
       "links": [
         {
           "text": "Privacy Policy",
@@ -114,7 +114,7 @@ window.styleConfiguration = {
     ]
   },
   "text": {
-    "welcome.heading": "Explore what you can do with carveiq.",
+    "welcome.heading": "Explore what you can do with carvelo.",
     "welcome.subheading": "Choose an option or tell us what interests you and we'll point you in the right direction.",
     "input.placeholder": "Tell us what you'd like to do or create",
     "input.messageInput.aria": "Message input",
@@ -183,6 +183,18 @@ window.styleConfiguration = {
     }
   },
   "theme": {
+    "--welcome-heading-size-desktop": "28px",
+    "--welcome-heading-size-mobile": "22px",
+    "--welcome-heading-weight": "700",
+    "--welcome-heading-text-align": "center",
+    "--welcome-subheading-size-desktop": "16px",
+    "--welcome-subheading-size-mobile": "14px",
+    "--welcome-subheading-text-align": "center",
+    "--welcome-padding": "24px",
+    "--prompt-suggestion-background": "#F8F8F8",
+    "--prompt-suggestion-background-hover": "#E1E1E1",
+    "--prompt-suggestion-text-color": "#292929",
+    "--prompt-suggestion-border-color": "transparent",
     "--welcome-input-order": "3",
     "--welcome-cards-order": "2",
     "--font-family": "'Adobe Clean', adobe-clean, 'Trebuchet MS', sans-serif",
