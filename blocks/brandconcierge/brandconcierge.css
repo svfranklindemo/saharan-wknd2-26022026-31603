@@ -140,3 +140,30 @@ main .section[data-sec-spacing="section-xhuge"]:has(#brand-concierge-mount.brand
   max-width: 100%;
   box-sizing: border-box;
 }
+
+/*
+  EDS global link styles append an arrow pseudo-element to every <a>.
+  Inside Brand Concierge response text/citations this produces stray tiny glyphs
+  and clipped markers near inline references (e.g. pricing lines).
+*/
+#brand-concierge-mount.brandconcierge .message-content a,
+#brand-concierge-mount.brandconcierge .citations-link,
+#brand-concierge-mount.brandconcierge .privacy-notice-link,
+#brand-concierge-mount.brandconcierge .disclaimer-link {
+  display: inline;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+#brand-concierge-mount.brandconcierge .message-content a::after,
+#brand-concierge-mount.brandconcierge .citations-link::after,
+#brand-concierge-mount.brandconcierge .privacy-notice-link::after,
+#brand-concierge-mount.brandconcierge .disclaimer-link::after {
+  content: none !important;
+  display: none !important;
+}
+
+#brand-concierge-mount.brandconcierge .citation-number {
+  vertical-align: middle;
+}
