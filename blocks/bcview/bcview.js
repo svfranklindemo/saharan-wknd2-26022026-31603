@@ -16,24 +16,24 @@ function rowPlainText(row) {
 }
 
 /**
- * @param {Element} li
+ * @param {Element} root Card row (`div`) or legacy list item (`li`)
  * @returns {{ src: string, title: string, itemCssId: string, alt: string, sourceEl: Element }}
  */
-function parseCardLi(li) {
-  const imgEl = li.querySelector('img');
+function parseCardEl(root) {
+  const imgEl = root.querySelector('img');
   const src = imgEl?.currentSrc || imgEl?.src || '';
   const alt = (imgEl?.getAttribute('alt') || '').trim();
 
   let title = '';
   let itemCssId = '';
 
-  const byTitle = li.querySelector('[data-aue-prop="title"]');
-  const byId = li.querySelector('[data-aue-prop="itemCssId"], [data-aue-prop="itemcssid"]');
+  const byTitle = root.querySelector('[data-aue-prop="title"]');
+  const byId = root.querySelector('[data-aue-prop="itemCssId"], [data-aue-prop="itemcssid"]');
   if (byTitle) title = byTitle.textContent.trim();
   if (byId) itemCssId = byId.textContent.trim();
 
   if (!title || !itemCssId) {
-    const ps = [...li.querySelectorAll(':scope p')];
+    const ps = [...root.querySelectorAll(':scope p')];
     if (!title && ps[0]) title = ps[0].textContent.trim();
     if (!itemCssId && ps[1]) itemCssId = ps[1].textContent.trim();
   }
@@ -43,18 +43,24 @@ function parseCardLi(li) {
     title,
     itemCssId,
     alt: alt || title,
-    sourceEl: li,
+    sourceEl: root,
   };
 }
 
 /**
  * @param {Element} block
- * @returns {ReturnType<typeof parseCardLi>[]}
+ * @param {Element[]} rows Top-level `div` rows (Franklin / UE block rows)
+ * @returns {ReturnType<typeof parseCardEl>[]}
  */
-function readCards(block) {
-  const ul = block.querySelector(':scope ul');
-  if (!ul) return [];
-  return [...ul.querySelectorAll(':scope > li')].map(parseCardLi);
+function readCards(block, rows) {
+  const topUl = [...block.children].find((el) => el.tagName === 'UL');
+  if (topUl) {
+    const fromList = [...topUl.querySelectorAll(':scope > li')]
+      .map(parseCardEl)
+      .filter((c) => c.title || c.src);
+    if (fromList.length) return fromList;
+  }
+  return rows.slice(2).map(parseCardEl).filter((c) => c.title || c.src);
 }
 
 /**
@@ -84,7 +90,7 @@ export default function decorate(block) {
   const headingText = headingEl?.textContent.replace(/\s+/g, ' ').trim() || rowPlainText(headingRow);
   const subheadingText = subheadingEl?.textContent.replace(/\s+/g, ' ').trim() || rowPlainText(subheadingRow);
 
-  const cards = readCards(block);
+  const cards = readCards(block, rows);
   const usedIds = new Set();
 
   const root = document.createElement('div');
@@ -140,8 +146,10 @@ export default function decorate(block) {
     grid.append(btn);
   });
 
-  const footer = document.createElement('footer');
+  const footer = document.createElement('div');
   footer.className = 'bcview__footer';
+  footer.setAttribute('role', 'region');
+  footer.setAttribute('aria-label', 'Message composer');
 
   const composer = document.createElement('div');
   composer.className = 'bcview__composer';

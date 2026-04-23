@@ -19,6 +19,33 @@
   margin-inline: auto;
 }
 
+/* Fixed site header: in-page anchors / scroll snap respect the nav band */
+.section.bcview-container {
+  scroll-margin-top: calc(var(--nav-height, 64px) + 16px);
+}
+
+/* When the first main section's top padding is smaller than the fixed nav bar, nudge the block down */
+main > .section.bcview-container:first-of-type:is(
+  [data-sec-spacing="section-none"],
+  [data-sec-spacing="section-xtiny"],
+  [data-sec-spacing="section-tiny"],
+  [data-sec-spacing="section-xxsmall"],
+  [data-sec-spacing="section-xsmall"],
+  [data-sec-spacing="section-regular"],
+  [data-sec-spacing="section-small"],
+  [data-sec-spacing="section-medium"],
+  [data-sec-spacing="section-large"],
+  [data-sec-spacing="section-xlarge"],
+  [data-sec-spacing="section-xxlarge"],
+  [data-sec-spacing="section-huge"]
+) .bcview-wrapper {
+  margin-top: calc(max(var(--nav-height, 64px), 90px) + 16px);
+}
+
+main > .section.bcview-container:first-of-type:not([data-sec-spacing]) .bcview-wrapper {
+  margin-top: calc(max(var(--nav-height, 64px), 90px) + 16px);
+}
+
 .bcview__root {
   box-sizing: border-box;
   padding: clamp(1.75rem, 4vw, 2.75rem);
