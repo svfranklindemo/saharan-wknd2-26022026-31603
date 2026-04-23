@@ -1,342 +1,208 @@
-import { createOptimizedPicture } from '../../scripts/aem.js';
-import { moveInstrumentation } from '../../scripts/scripts.js';
+/**
+ * Bcview — Brand concierge style UI, built entirely in JS (static demo content).
+ * Authoring model fields remain in _bcview.json for future use; this block does not read them.
+ */
 
 const INPUT_PLACEHOLDER = "Tell us what you'd like to do or create";
 
-/**
- * @param {Element} row
- * @returns {string}
- */
-function rowPlainText(row) {
-  if (!row) return '';
-  const cell = row.querySelector(':scope > div') || row;
-  const p = cell.querySelector('p');
-  const source = p || cell;
-  return source.textContent.replace(/\s+/g, ' ').trim();
-}
+const TERMS_HREF = 'https://www.adobe.com/legal/licenses-terms/adobe-gen-ai-user-guidelines.html';
+
+/** @type {{ title: string; subheading: string; cards: { title: string; image: string }[] }} */
+const STATIC = {
+  title: 'Explore what you can do with carvelo.',
+  subheading:
+    "Choose an option or tell us what interests you and we'll point you in the right direction.",
+  cards: [
+    {
+      title: 'Explore our vehicle lineup',
+      image:
+        'https://carvelo.adobedemosystem.com/en/models/media_12fddf2e4fe309d58bebd165ca936d9169fb1df98.png?width=900&format=webply&optimize=medium',
+    },
+    {
+      title: 'Financing & leasing options',
+      image:
+        'https://carvelo.adobedemosystem.com/en/media_1d6c9b590cebe19daf009f0ae4ccccedb368754a3.png?width=2000&format=webply&optimize=medium',
+    },
+    {
+      title: 'Schedule a test drive',
+      image:
+        'https://carvelo.adobedemosystem.com/en/models/media_12d5bc10ec95f78c1de050f1aa2e2c70ee2081df8.png?width=900&format=webply&optimize=medium',
+    },
+    {
+      title: 'Accessories & parts',
+      image:
+        'https://carvelo.adobedemosystem.com/en/accessory/media_15098d07f6b69517f4f9b132a647d651db4a436f4.jpg?width=900&format=webply&optimize=medium',
+    },
+  ],
+};
+
+const SEND_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M18.6485 9.9735C18.6482 9.67899 18.4769 9.41106 18.2059 9.29056L4.05752 2.93282C3.80133 2.8175 3.50129 2.85583 3.28171 3.03122C3.06178 3.20765 2.95889 3.49146 3.01516 3.76733L4.28678 10.008L3.06488 16.2384C3.0162 16.4852 3.09492 16.738 3.27031 16.9134C3.29068 16.9337 3.31278 16.9531 3.33522 16.9714C3.55619 17.1454 3.85519 17.182 4.11069 17.066L18.2086 10.6578C18.4773 10.5356 18.6489 10.268 18.6485 9.9735ZM14.406 9.22716L5.66439 9.25379L4.77705 4.90084L14.406 9.22716ZM4.81711 15.0973L5.6694 10.7529L14.4323 10.7264L4.81711 15.0973Z"/></svg>';
+
+const PILL_ICON_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.2 9.35 5.2h4.2l-3.4 2.45L11.4 12 8 9.55 4.6 12l1.25-4.35-3.4-2.45h4.2L8 1.2z" fill="currentColor" opacity=".9"/><path d="M4.2 13.2c-.35 0-.65-.25-.75-.55l-.35-1.2-1.15-.95c-.2-.15-.25-.4-.1-.6.15-.2.4-.3.65-.25l1.2.2.95-1.15c.15-.2.45-.25.65-.1.2.15.3.4.25.65l-.2 1.2 1.15.95c.15.2.1.45-.1.6-.15.2-.4.25-.6.2l-1.2-.2-.95 1.15c-.1.15-.25.2-.4.2z" fill="currentColor" opacity=".55"/></svg>';
 
 /**
- * @param {Element} root
- * @returns {{ src: string, alt: string }}
+ * @param {HTMLInputElement} input
+ * @param {HTMLButtonElement} send
+ * @param {string} text
  */
-function resolveImageSrc(root) {
-  const imgEl = root.querySelector('img');
-  if (imgEl) {
-    const src = imgEl.currentSrc || imgEl.src || '';
-    if (src) {
-      return { src, alt: (imgEl.getAttribute('alt') || '').trim() };
-    }
-  }
-  const ref = root.querySelector('[data-aue-prop="image"]');
-  if (ref) {
-    if (ref.tagName === 'A' && ref.href) {
-      return { src: ref.href, alt: ref.textContent.replace(/\s+/g, ' ').trim() };
-    }
-    const link = ref.querySelector('a[href]');
-    if (link?.href) {
-      return { src: link.href, alt: link.textContent.replace(/\s+/g, ' ').trim() };
-    }
-  }
-  const dm = root.querySelector('a[href*="dynamicmedia"], a[href*="scene7"], a[href*="delivery-p"]');
-  if (dm?.href) return { src: dm.href, alt: (dm.textContent || '').trim() };
-  return { src: '', alt: '' };
-}
-
-/**
- * @param {Element} root Card row, packed card cell, or legacy list item (`li`)
- * @returns {{ src: string, title: string, itemCssId: string, alt: string, sourceEl: Element }}
- */
-function parseCardEl(root) {
-  const { src, alt: imgAlt } = resolveImageSrc(root);
-
-  let title = '';
-  let itemCssId = '';
-
-  const byTitle = root.querySelector('[data-aue-prop="title"]');
-  const byId = root.querySelector('[data-aue-prop="itemCssId"], [data-aue-prop="itemcssid"]');
-  if (byTitle) title = byTitle.textContent.replace(/\s+/g, ' ').trim();
-  if (byId) itemCssId = byId.textContent.replace(/\s+/g, ' ').trim();
-
-  const cells = [...root.children].filter((n) => n.nodeType === 1);
-  if (!title || !itemCssId) {
-    if (cells.length >= 3) {
-      if (!title) title = (cells[1].textContent || '').replace(/\s+/g, ' ').trim();
-      if (!itemCssId) itemCssId = (cells[2].textContent || '').replace(/\s+/g, ' ').trim();
-    } else if (cells.length === 2) {
-      if (!title) title = (cells[1].textContent || '').replace(/\s+/g, ' ').trim();
-    }
-  }
-
-  if (!title || !itemCssId) {
-    const ps = [...root.querySelectorAll(':scope p')].filter((p) => p.textContent.trim());
-    if (!title && ps[0]) title = ps[0].textContent.replace(/\s+/g, ' ').trim();
-    if (!itemCssId && ps[1]) itemCssId = ps[1].textContent.replace(/\s+/g, ' ').trim();
-  }
-
-  const alt = (imgAlt || title || '').trim();
-
-  return {
-    src,
-    title,
-    itemCssId,
-    alt: alt || title,
-    sourceEl: root,
-  };
-}
-
-/**
- * @param {ReturnType<typeof parseCardEl>} c
- */
-function cardHasContent(c) {
-  return Boolean(c.title?.trim() || c.src?.trim());
-}
-
-/**
- * When UE packs multiple card instances into one wrapper, split into per-card roots.
- * @param {Element} el
- * @returns {Element[]}
- */
-function expandPackedCardHosts(el) {
-  if (el.tagName === 'UL' || el.tagName === 'LI') return [el];
-  let layer = el;
-  const onlyWrapper = el.children.length === 1
-    && el.firstElementChild?.classList?.contains('default-content-wrapper');
-  if (onlyWrapper) {
-    layer = /** @type {Element} */ (el.firstElementChild);
-  }
-  const kids = [...layer.children].filter((n) => n.nodeType === 1);
-  if (kids.length < 2) return [el];
-  const cardish = kids.filter((c) => (
-    c.querySelector('[data-aue-prop="title"]')
-    || c.querySelector('[data-aue-prop="image"]')
-    || c.querySelector('picture, img')
-    || c.querySelector('a[href*="dynamicmedia"], a[href*="scene7"]')
-  ));
-  if (cardish.length >= 2) return cardish;
-  return [el];
-}
-
-/**
- * @param {Element} row
- */
-function isLikelyCardRow(row) {
-  return !!(row?.querySelector?.('[data-aue-prop="title"], [data-aue-prop="image"]')
-    || row?.querySelector?.('picture, img')
-    || row?.querySelector?.('a[href*="dynamicmedia"], a[href*="scene7"]'));
-}
-
-/**
- * First block-level index where quick-action cards start (after heading / subheading rows).
- * @param {Element[]} kids
- */
-function cardHostStartIndex(kids) {
-  if (!kids.length) return 0;
-  const hi = kids.findIndex((k) => k.querySelector('[data-aue-prop="heading"]'));
-  const si = kids.findIndex((k) => k.querySelector('[data-aue-prop="subheading"]'));
-  if (hi >= 0) {
-    if (si > hi) return si + 1;
-    const next = kids[hi + 1];
-    if (!next) return hi + 1;
-    if (!isLikelyCardRow(next)) return hi + 2;
-    return hi + 1;
-  }
-  return Math.min(2, kids.length);
-}
-
-/**
- * @param {Element} block
- * @returns {Element[]}
- */
-function collectCardHostElements(block) {
-  const kids = [...block.children];
-  const start = cardHostStartIndex(kids);
-  return kids.slice(start);
-}
-
-/**
- * @param {Element[]} hosts
- * @returns {Element[]}
- */
-function hostsToCardRoots(hosts) {
-  const out = [];
-  hosts.forEach((h) => {
-    if (h.tagName === 'UL') {
-      out.push(...h.querySelectorAll(':scope > li'));
-    } else {
-      out.push(...expandPackedCardHosts(h));
-    }
-  });
-  return out;
-}
-
-/**
- * Card rows sometimes omit block-level wrappers; gather nearest block-child ancestor per title field.
- * @param {Element} block
- * @returns {Element[]}
- */
-function cardRootsFromTitleProps(block) {
-  const titles = [...block.querySelectorAll('[data-aue-prop="title"]')];
-  const seen = new Set();
-  const roots = [];
-  titles.forEach((t) => {
-    let row = t;
-    while (row?.parentElement && row.parentElement !== block) {
-      row = row.parentElement;
-    }
-    if (!row || seen.has(row)) return;
-    if (row.querySelector('[data-aue-prop="heading"]')) return;
-    seen.add(row);
-    roots.push(row);
-  });
-  return roots;
-}
-
-/**
- * @param {Element} block
- * @returns {ReturnType<typeof parseCardEl>[]}
- */
-function readCards(block) {
-  const hosts = collectCardHostElements(block);
-  const roots = hostsToCardRoots(hosts);
-  let parsed = roots.map(parseCardEl).filter(cardHasContent);
-  if (parsed.length) return parsed;
-  parsed = cardRootsFromTitleProps(block).map(parseCardEl).filter(cardHasContent);
-  if (parsed.length) return parsed;
-  const rows = [...block.querySelectorAll(':scope > div')];
-  return rows.slice(2).map(parseCardEl).filter(cardHasContent);
-}
-
-/**
- * @param {string} raw
- * @returns {string}
- */
-function sanitizeHtmlId(raw) {
-  const s = String(raw || '').trim();
-  if (!s) return '';
-  if (!/^[A-Za-z][\w-]*$/.test(s)) return '';
-  return s;
+function applyPrompt(input, send, text) {
+  const t = text.trim();
+  input.value = t;
+  send.disabled = !t;
+  input.focus();
 }
 
 /**
  * @param {Element} block
  */
 export default function decorate(block) {
-  const kids = [...block.children];
-  const hi = kids.findIndex((k) => k.querySelector('[data-aue-prop="heading"]'));
-  const si = kids.findIndex((k) => k.querySelector('[data-aue-prop="subheading"]'));
-  const headingRow = hi >= 0 ? kids[hi] : kids[0];
-  let subheadingRow = si >= 0 ? kids[si] : (hi < 0 && kids.length > 1 ? kids[1] : null);
-  if (subheadingRow && !subheadingRow.querySelector('[data-aue-prop="subheading"]')
-      && subheadingRow.querySelector('[data-aue-prop="title"]')) {
-    subheadingRow = null;
-  }
-
-  const headingEl = headingRow?.querySelector('[data-aue-prop="heading"]')
-    || headingRow?.querySelector('p, div');
-  const subheadingEl = subheadingRow?.querySelector('[data-aue-prop="subheading"]')
-    || subheadingRow?.querySelector('p, div');
-
-  const headingText = headingEl?.textContent.replace(/\s+/g, ' ').trim() || rowPlainText(headingRow);
-  const subheadingText = subheadingEl?.textContent.replace(/\s+/g, ' ').trim() || rowPlainText(subheadingRow);
-
-  const cards = readCards(block);
-  const usedIds = new Set();
-
   const root = document.createElement('div');
   root.className = 'bcview__root';
 
-  const header = document.createElement('header');
-  header.className = 'bcview__header';
+  const shell = document.createElement('div');
+  shell.className = 'bcview__shell';
 
-  const h2 = document.createElement('h2');
-  h2.className = 'bcview__heading';
-  h2.textContent = headingText;
-  if (headingEl) moveInstrumentation(headingEl, h2);
+  const chat = document.createElement('div');
+  chat.className = 'bcview__chat';
 
-  const sub = document.createElement('p');
-  sub.className = 'bcview__subheading';
-  sub.textContent = subheadingText;
-  if (subheadingEl) moveInstrumentation(subheadingEl, sub);
+  const intro = document.createElement('div');
+  intro.className = 'bcview__intro';
+  const title = document.createElement('h2');
+  title.className = 'bcview__title';
+  title.textContent = STATIC.title;
+  const subtitle = document.createElement('p');
+  subtitle.className = 'bcview__subtitle';
+  subtitle.textContent = STATIC.subheading;
+  intro.append(title, subtitle);
 
-  header.append(h2, sub);
-
+  const cardsSection = document.createElement('div');
+  cardsSection.className = 'bcview__cards-section';
   const grid = document.createElement('div');
-  grid.className = 'bcview__grid';
-  grid.setAttribute('role', 'list');
+  grid.className = 'bcview__card-grid';
+  grid.dataset.cardCount = '4';
+  grid.setAttribute('role', 'group');
+  grid.setAttribute('aria-label', 'Quick actions');
 
-  cards.forEach((card, index) => {
+  STATIC.cards.forEach((card) => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'bcview__card';
-    btn.setAttribute('role', 'listitem');
-    const label = card.title || `Option ${index + 1}`;
-    btn.setAttribute('aria-label', label);
+    btn.className = 'bcview__bc-card bcview__bc-card--image';
+    btn.setAttribute('aria-label', card.title);
 
-    if (card.sourceEl) moveInstrumentation(card.sourceEl, btn);
+    const img = document.createElement('div');
+    img.className = 'bcview__bc-card-image';
+    img.style.backgroundImage = `url(${JSON.stringify(card.image)})`;
 
-    const rawId = sanitizeHtmlId(card.itemCssId);
-    if (rawId && !usedIds.has(rawId)) {
-      btn.id = rawId;
-      usedIds.add(rawId);
-    }
-
-    const media = document.createElement('div');
-    media.className = 'bcview__card-media';
-    if (card.src) {
-      const pic = createOptimizedPicture(card.src, card.alt || label, false, [{ width: '900' }]);
-      media.append(pic);
-    }
-
-    const cap = document.createElement('span');
-    cap.className = 'bcview__card-label';
+    const cap = document.createElement('div');
+    cap.className = 'bcview__bc-card-text';
     cap.textContent = card.title;
 
-    btn.append(media, cap);
+    btn.append(img, cap);
     grid.append(btn);
   });
+  cardsSection.append(grid);
 
-  const footer = document.createElement('div');
-  footer.className = 'bcview__footer';
-  footer.setAttribute('role', 'region');
-  footer.setAttribute('aria-label', 'Message composer');
+  const pills = document.createElement('div');
+  pills.className = 'bcview__pills';
+  pills.setAttribute('role', 'group');
+  pills.setAttribute('aria-label', 'Suggested prompts');
 
-  const composer = document.createElement('div');
-  composer.className = 'bcview__composer';
+  STATIC.cards.forEach((card) => {
+    const pill = document.createElement('button');
+    pill.type = 'button';
+    pill.className = 'bcview__pill';
+    pill.setAttribute('aria-label', card.title);
+    pill.innerHTML = `<span class="bcview__pill-icon">${PILL_ICON_SVG}</span><span class="bcview__pill-text"></span>`;
+    pill.querySelector('.bcview__pill-text').textContent = card.title;
+    pills.append(pill);
+  });
+
+  const history = document.createElement('div');
+  history.className = 'bcview__history';
+  history.setAttribute('aria-live', 'polite');
+  history.setAttribute('aria-label', 'Messages will appear here');
+
+  const composerSection = document.createElement('div');
+  composerSection.className = 'bcview__composer-section';
+
+  const composerRow = document.createElement('div');
+  composerRow.className = 'bcview__composer-row';
+
+  const inputWrap = document.createElement('div');
+  inputWrap.className = 'bcview__input-wrap';
 
   const input = document.createElement('input');
   input.type = 'text';
-  input.className = 'bcview__input';
+  input.className = 'bcview__chat-input';
   input.placeholder = INPUT_PLACEHOLDER;
+  input.autocomplete = 'off';
   input.setAttribute('aria-label', 'Message input');
 
   const send = document.createElement('button');
   send.type = 'button';
-  send.className = 'bcview__send';
+  send.className = 'bcview__send-btn';
   send.disabled = true;
   send.setAttribute('aria-label', 'Send message');
-  send.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M18.6485 9.9735C18.6482 9.67899 18.4769 9.41106 18.2059 9.29056L4.05752 2.93282C3.80133 2.8175 3.50129 2.85583 3.28171 3.03122C3.06178 3.20765 2.95889 3.49146 3.01516 3.76733L4.28678 10.008L3.06488 16.2384C3.0162 16.4852 3.09492 16.738 3.27031 16.9134C3.29068 16.9337 3.31278 16.9531 3.33522 16.9714C3.55619 17.1454 3.85519 17.182 4.11069 17.066L18.2086 10.6578C18.4773 10.5356 18.6489 10.268 18.6485 9.9735ZM14.406 9.22716L5.66439 9.25379L4.77705 4.90084L14.406 9.22716ZM4.81711 15.0973L5.6694 10.7529L14.4323 10.7264L4.81711 15.0973Z"/></svg>';
+  send.innerHTML = SEND_SVG;
 
-  input.addEventListener('input', () => {
-    send.disabled = !input.value.trim();
-  });
+  inputWrap.append(input);
+  composerRow.append(inputWrap, send);
 
-  composer.append(input, send);
-
-  const disc = document.createElement('p');
-  disc.className = 'bcview__disclaimer';
-  disc.append(
+  const legal = document.createElement('p');
+  legal.className = 'bcview__legal';
+  legal.append(
     document.createTextNode('AI responses may be inaccurate. Check answers and sources. '),
   );
   const terms = document.createElement('a');
-  terms.className = 'bcview__disclaimer-link';
-  terms.href = 'https://www.adobe.com/legal/licenses-terms/adobe-gen-ai-user-guidelines.html';
+  terms.className = 'bcview__legal-link';
+  terms.href = TERMS_HREF;
   terms.target = '_blank';
   terms.rel = 'noopener noreferrer';
   terms.textContent = 'Terms';
-  disc.append(terms);
+  legal.append(terms);
 
-  footer.append(composer, disc);
+  composerSection.append(composerRow, legal);
 
-  root.append(header, grid, footer);
+  chat.append(intro, cardsSection, pills, history, composerSection);
+  shell.append(chat);
+  root.append(shell);
   block.replaceChildren(root);
+
+  const syncSend = () => {
+    send.disabled = !input.value.trim();
+  };
+
+  input.addEventListener('input', syncSend);
+
+  grid.querySelectorAll('button').forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      applyPrompt(input, send, STATIC.cards[i].title);
+    });
+  });
+  pills.querySelectorAll('button').forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      applyPrompt(input, send, STATIC.cards[i].title);
+    });
+  });
+
+  send.addEventListener('click', () => {
+    const msg = input.value.trim();
+    if (!msg) return;
+    const bubble = document.createElement('div');
+    bubble.className = 'bcview__msg bcview__msg--user';
+    bubble.textContent = msg;
+    history.append(bubble);
+    history.scrollTop = history.scrollHeight;
+    input.value = '';
+    syncSend();
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      send.click();
+    }
+  });
 }
