@@ -1,3 +1,5 @@
+import { loadCSS } from '../../scripts/aem.js';
+
 const MOUNT_ID = 'brand-concierge-mount';
 const BC_SELECTOR = '#brand-concierge-mount';
 const LOG_PREFIX = '[bcview]';
@@ -98,6 +100,8 @@ async function ensureConversationReady() {
  * @param {Element} block
  */
 export default function decorate(block) {
+  loadCSS(`${window.hlx.codeBasePath}/blocks/brandconcierge/brandconcierge.css`);
+
   let bcInitialized = false;
   let bootstrapping = false;
   let minimized = false;
