@@ -16,27 +16,64 @@ function rowPlainText(row) {
 }
 
 /**
- * @param {Element} root Card row (`div`) or legacy list item (`li`)
+ * @param {Element} root
+ * @returns {{ src: string, alt: string }}
+ */
+function resolveImageSrc(root) {
+  const imgEl = root.querySelector('img');
+  if (imgEl) {
+    const src = imgEl.currentSrc || imgEl.src || '';
+    if (src) {
+      return { src, alt: (imgEl.getAttribute('alt') || '').trim() };
+    }
+  }
+  const ref = root.querySelector('[data-aue-prop="image"]');
+  if (ref) {
+    if (ref.tagName === 'A' && ref.href) {
+      return { src: ref.href, alt: ref.textContent.replace(/\s+/g, ' ').trim() };
+    }
+    const link = ref.querySelector('a[href]');
+    if (link?.href) {
+      return { src: link.href, alt: link.textContent.replace(/\s+/g, ' ').trim() };
+    }
+  }
+  const dm = root.querySelector('a[href*="dynamicmedia"], a[href*="scene7"], a[href*="delivery-p"]');
+  if (dm?.href) return { src: dm.href, alt: (dm.textContent || '').trim() };
+  return { src: '', alt: '' };
+}
+
+/**
+ * @param {Element} root Card row, packed card cell, or legacy list item (`li`)
  * @returns {{ src: string, title: string, itemCssId: string, alt: string, sourceEl: Element }}
  */
 function parseCardEl(root) {
-  const imgEl = root.querySelector('img');
-  const src = imgEl?.currentSrc || imgEl?.src || '';
-  const alt = (imgEl?.getAttribute('alt') || '').trim();
+  const { src, alt: imgAlt } = resolveImageSrc(root);
 
   let title = '';
   let itemCssId = '';
 
   const byTitle = root.querySelector('[data-aue-prop="title"]');
   const byId = root.querySelector('[data-aue-prop="itemCssId"], [data-aue-prop="itemcssid"]');
-  if (byTitle) title = byTitle.textContent.trim();
-  if (byId) itemCssId = byId.textContent.trim();
+  if (byTitle) title = byTitle.textContent.replace(/\s+/g, ' ').trim();
+  if (byId) itemCssId = byId.textContent.replace(/\s+/g, ' ').trim();
+
+  const cells = [...root.children].filter((n) => n.nodeType === 1);
+  if (!title || !itemCssId) {
+    if (cells.length >= 3) {
+      if (!title) title = (cells[1].textContent || '').replace(/\s+/g, ' ').trim();
+      if (!itemCssId) itemCssId = (cells[2].textContent || '').replace(/\s+/g, ' ').trim();
+    } else if (cells.length === 2) {
+      if (!title) title = (cells[1].textContent || '').replace(/\s+/g, ' ').trim();
+    }
+  }
 
   if (!title || !itemCssId) {
-    const ps = [...root.querySelectorAll(':scope p')];
-    if (!title && ps[0]) title = ps[0].textContent.trim();
-    if (!itemCssId && ps[1]) itemCssId = ps[1].textContent.trim();
+    const ps = [...root.querySelectorAll(':scope p')].filter((p) => p.textContent.trim());
+    if (!title && ps[0]) title = ps[0].textContent.replace(/\s+/g, ' ').trim();
+    if (!itemCssId && ps[1]) itemCssId = ps[1].textContent.replace(/\s+/g, ' ').trim();
   }
+
+  const alt = (imgAlt || title || '').trim();
 
   return {
     src,
@@ -48,19 +85,125 @@ function parseCardEl(root) {
 }
 
 /**
+ * @param {ReturnType<typeof parseCardEl>} c
+ */
+function cardHasContent(c) {
+  return Boolean(c.title?.trim() || c.src?.trim());
+}
+
+/**
+ * When UE packs multiple card instances into one wrapper, split into per-card roots.
+ * @param {Element} el
+ * @returns {Element[]}
+ */
+function expandPackedCardHosts(el) {
+  if (el.tagName === 'UL' || el.tagName === 'LI') return [el];
+  let layer = el;
+  const onlyWrapper = el.children.length === 1
+    && el.firstElementChild?.classList?.contains('default-content-wrapper');
+  if (onlyWrapper) {
+    layer = /** @type {Element} */ (el.firstElementChild);
+  }
+  const kids = [...layer.children].filter((n) => n.nodeType === 1);
+  if (kids.length < 2) return [el];
+  const cardish = kids.filter((c) => (
+    c.querySelector('[data-aue-prop="title"]')
+    || c.querySelector('[data-aue-prop="image"]')
+    || c.querySelector('picture, img')
+    || c.querySelector('a[href*="dynamicmedia"], a[href*="scene7"]')
+  ));
+  if (cardish.length >= 2) return cardish;
+  return [el];
+}
+
+/**
+ * @param {Element} row
+ */
+function isLikelyCardRow(row) {
+  return !!(row?.querySelector?.('[data-aue-prop="title"], [data-aue-prop="image"]')
+    || row?.querySelector?.('picture, img')
+    || row?.querySelector?.('a[href*="dynamicmedia"], a[href*="scene7"]'));
+}
+
+/**
+ * First block-level index where quick-action cards start (after heading / subheading rows).
+ * @param {Element[]} kids
+ */
+function cardHostStartIndex(kids) {
+  if (!kids.length) return 0;
+  const hi = kids.findIndex((k) => k.querySelector('[data-aue-prop="heading"]'));
+  const si = kids.findIndex((k) => k.querySelector('[data-aue-prop="subheading"]'));
+  if (hi >= 0) {
+    if (si > hi) return si + 1;
+    const next = kids[hi + 1];
+    if (!next) return hi + 1;
+    if (!isLikelyCardRow(next)) return hi + 2;
+    return hi + 1;
+  }
+  return Math.min(2, kids.length);
+}
+
+/**
  * @param {Element} block
- * @param {Element[]} rows Top-level `div` rows (Franklin / UE block rows)
+ * @returns {Element[]}
+ */
+function collectCardHostElements(block) {
+  const kids = [...block.children];
+  const start = cardHostStartIndex(kids);
+  return kids.slice(start);
+}
+
+/**
+ * @param {Element[]} hosts
+ * @returns {Element[]}
+ */
+function hostsToCardRoots(hosts) {
+  const out = [];
+  hosts.forEach((h) => {
+    if (h.tagName === 'UL') {
+      out.push(...h.querySelectorAll(':scope > li'));
+    } else {
+      out.push(...expandPackedCardHosts(h));
+    }
+  });
+  return out;
+}
+
+/**
+ * Card rows sometimes omit block-level wrappers; gather nearest block-child ancestor per title field.
+ * @param {Element} block
+ * @returns {Element[]}
+ */
+function cardRootsFromTitleProps(block) {
+  const titles = [...block.querySelectorAll('[data-aue-prop="title"]')];
+  const seen = new Set();
+  const roots = [];
+  titles.forEach((t) => {
+    let row = t;
+    while (row?.parentElement && row.parentElement !== block) {
+      row = row.parentElement;
+    }
+    if (!row || seen.has(row)) return;
+    if (row.querySelector('[data-aue-prop="heading"]')) return;
+    seen.add(row);
+    roots.push(row);
+  });
+  return roots;
+}
+
+/**
+ * @param {Element} block
  * @returns {ReturnType<typeof parseCardEl>[]}
  */
-function readCards(block, rows) {
-  const topUl = [...block.children].find((el) => el.tagName === 'UL');
-  if (topUl) {
-    const fromList = [...topUl.querySelectorAll(':scope > li')]
-      .map(parseCardEl)
-      .filter((c) => c.title || c.src);
-    if (fromList.length) return fromList;
-  }
-  return rows.slice(2).map(parseCardEl).filter((c) => c.title || c.src);
+function readCards(block) {
+  const hosts = collectCardHostElements(block);
+  const roots = hostsToCardRoots(hosts);
+  let parsed = roots.map(parseCardEl).filter(cardHasContent);
+  if (parsed.length) return parsed;
+  parsed = cardRootsFromTitleProps(block).map(parseCardEl).filter(cardHasContent);
+  if (parsed.length) return parsed;
+  const rows = [...block.querySelectorAll(':scope > div')];
+  return rows.slice(2).map(parseCardEl).filter(cardHasContent);
 }
 
 /**
@@ -78,9 +221,15 @@ function sanitizeHtmlId(raw) {
  * @param {Element} block
  */
 export default function decorate(block) {
-  const rows = [...block.querySelectorAll(':scope > div')];
-  const headingRow = rows[0];
-  const subheadingRow = rows[1];
+  const kids = [...block.children];
+  const hi = kids.findIndex((k) => k.querySelector('[data-aue-prop="heading"]'));
+  const si = kids.findIndex((k) => k.querySelector('[data-aue-prop="subheading"]'));
+  const headingRow = hi >= 0 ? kids[hi] : kids[0];
+  let subheadingRow = si >= 0 ? kids[si] : (hi < 0 && kids.length > 1 ? kids[1] : null);
+  if (subheadingRow && !subheadingRow.querySelector('[data-aue-prop="subheading"]')
+      && subheadingRow.querySelector('[data-aue-prop="title"]')) {
+    subheadingRow = null;
+  }
 
   const headingEl = headingRow?.querySelector('[data-aue-prop="heading"]')
     || headingRow?.querySelector('p, div');
@@ -90,7 +239,7 @@ export default function decorate(block) {
   const headingText = headingEl?.textContent.replace(/\s+/g, ' ').trim() || rowPlainText(headingRow);
   const subheadingText = subheadingEl?.textContent.replace(/\s+/g, ' ').trim() || rowPlainText(subheadingRow);
 
-  const cards = readCards(block, rows);
+  const cards = readCards(block);
   const usedIds = new Set();
 
   const root = document.createElement('div');
