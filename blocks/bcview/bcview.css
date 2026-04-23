@@ -1056,33 +1056,15 @@
   margin-inline: auto;
 }
 
+/*
+  Clear fixed/sticky header for every bcview section.
+
+  Previously only main > .section.bcview-container:first-of-type got margin;
+  if another section is first (hero, etc.), bcview sat under the nav.
+*/
 .section.bcview-container {
   scroll-margin-top: calc(var(--nav-height, 64px) + 16px);
-}
-
-main > .section.bcview-container:first-of-type:is(
-  [data-sec-spacing="section-none"],
-  [data-sec-spacing="section-xtiny"],
-  [data-sec-spacing="section-tiny"],
-  [data-sec-spacing="section-xxsmall"],
-  [data-sec-spacing="section-xsmall"],
-  [data-sec-spacing="section-regular"],
-  [data-sec-spacing="section-small"],
-  [data-sec-spacing="section-medium"],
-  [data-sec-spacing="section-large"],
-  [data-sec-spacing="section-xlarge"],
-  [data-sec-spacing="section-xxlarge"],
-  [data-sec-spacing="section-huge"]
-) .bcview-wrapper {
-  margin-top: calc(max(var(--nav-height, 64px), 90px) + 16px);
-}
-
-main > .section.bcview-container:first-of-type:not([data-sec-spacing]) .bcview-wrapper {
-  margin-top: calc(max(var(--nav-height, 64px), 90px) + 16px);
-}
-
-main > .section.bcview-container:first-of-type[data-sec-spacing="section-xhuge"] .bcview-wrapper {
-  margin-top: max(0px, calc(max(var(--nav-height, 64px), 90px) + 16px - var(--spacing-xhuge, 6rem)));
+  padding-top: calc(max(var(--nav-height, 64px), 90px) + 16px + env(safe-area-inset-top, 0px));
 }
 
 /* --- surface & ambience --- */
