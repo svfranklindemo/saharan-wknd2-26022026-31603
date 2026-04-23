@@ -9,6 +9,7 @@
     "id": "section",
     "components": [
       "button",
+      "bcview",
       "cards",
       "carousel",
       "columns",

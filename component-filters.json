@@ -10,6 +10,7 @@
     "components": [
       "button",
       "action-button",
+      "bcview",
       "cards",
       "carousel",
       "columns",

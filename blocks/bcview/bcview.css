@@ -1,0 +1,221 @@
+.bcview {
+  --bcview-bg: #1a1b1e;
+  --bcview-surface: linear-gradient(165deg, #24262b 0%, #1a1b1e 45%, #141518 100%);
+  --bcview-border: rgb(255 255 255 / 8%);
+  --bcview-text: #f4f4f5;
+  --bcview-muted: rgb(244 244 245 / 72%);
+  --bcview-card: #2c2e33;
+  --bcview-card-hover: #35383f;
+  --bcview-glow: rgb(99 102 241 / 22%);
+  --bcview-radius: 16px;
+  --bcview-radius-sm: 12px;
+  --bcview-shadow: 0 24px 48px rgb(0 0 0 / 35%);
+
+  color: var(--bcview-text);
+}
+
+.bcview-wrapper {
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.bcview__root {
+  box-sizing: border-box;
+  padding: clamp(1.75rem, 4vw, 2.75rem);
+  border-radius: var(--bcview-radius);
+  border: 1px solid var(--bcview-border);
+  background: var(--bcview-surface);
+  box-shadow: var(--bcview-shadow);
+}
+
+.bcview__header {
+  text-align: center;
+  max-width: 44rem;
+  margin-inline: auto;
+  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.bcview__heading {
+  margin: 0 0 0.65rem;
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.bcview__subheading {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+  line-height: 1.55;
+  color: var(--bcview-muted);
+  font-weight: 400;
+}
+
+.bcview__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: clamp(0.75rem, 2vw, 1.1rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+}
+
+@media (width <= 720px) {
+  .bcview__grid {
+    grid-auto-flow: column;
+    grid-auto-columns: min(240px, 78vw);
+    overflow-x: auto;
+    padding-bottom: 0.35rem;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .bcview__card {
+    scroll-snap-align: start;
+  }
+}
+
+.bcview__card {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  border-radius: var(--bcview-radius-sm);
+  overflow: hidden;
+  background: var(--bcview-card);
+  border: 1px solid var(--bcview-border);
+  min-height: 200px;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.bcview__card:focus-visible {
+  outline: 2px solid rgb(129 140 248);
+  outline-offset: 3px;
+}
+
+.bcview__card:hover {
+  transform: translateY(-3px);
+  background: var(--bcview-card-hover);
+  border-color: rgb(255 255 255 / 14%);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 28%), 0 0 0 1px var(--bcview-glow);
+}
+
+.bcview__card:active {
+  transform: translateY(-1px);
+}
+
+.bcview__card-media {
+  position: relative;
+  flex: 1;
+  min-height: 132px;
+  background: rgb(0 0 0 / 25%);
+}
+
+.bcview__card-media picture,
+.bcview__card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bcview__card-media img {
+  min-height: 132px;
+}
+
+.bcview__card-label {
+  display: block;
+  padding: 0.85rem 1rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  border-top: 1px solid rgb(0 0 0 / 35%);
+  background: linear-gradient(180deg, rgb(0 0 0 / 12%) 0%, rgb(0 0 0 / 28%) 100%);
+}
+
+.bcview__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bcview__composer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.35rem 0.35rem 1.1rem;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid rgb(0 0 0 / 6%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 80%);
+}
+
+.bcview__input {
+  flex: 1;
+  border: 0;
+  min-width: 0;
+  padding: 0.65rem 0;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: #1a1a1c;
+  background: transparent;
+}
+
+.bcview__input::placeholder {
+  color: rgb(26 26 28 / 45%);
+}
+
+.bcview__input:focus {
+  outline: 0;
+}
+
+.bcview__send {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  display: grid;
+  place-items: center;
+  background: #e8e8ea;
+  color: #3a3a3e;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.bcview__send:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.bcview__send:not(:disabled):hover {
+  background: #d9d9dc;
+}
+
+.bcview__send:not(:disabled):active {
+  transform: scale(0.96);
+}
+
+.bcview__disclaimer {
+  margin: 0;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: rgb(244 244 245 / 52%);
+}
+
+.bcview__disclaimer-link {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.bcview__disclaimer-link:hover {
+  color: rgb(244 244 245 / 78%);
+}
