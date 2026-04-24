@@ -43,8 +43,10 @@
 .bcview__shell {
   position: relative;
   z-index: 1;
+  width: 100%;
   max-width: 1040px;
   margin-inline: auto;
+  box-sizing: border-box;
 }
 
 .bcview__chat {
@@ -293,12 +295,16 @@
 
 .bcview__composer-section {
   margin-top: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .bcview__chat-bar-inline {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
   background: linear-gradient(135deg, #e8dff5 0%, #d5c4e8 40%, #c7b1dd 100%);
   border-radius: 14px;
   padding: 8px;
@@ -323,7 +329,8 @@
 }
 
 .bcview__input-wrap {
-  flex: 1;
+  flex: 1 1 0%;
+  min-width: 0;
   display: flex;
   align-items: center;
   background: #fff;
@@ -334,7 +341,8 @@
 }
 
 .bcview__input {
-  flex: 1;
+  flex: 1 1 0%;
+  min-width: 0;
   border: none;
   outline: none;
   background: transparent;
@@ -710,7 +718,8 @@
 }
 
 .bcview__input-wrap {
-  flex: 1;
+  flex: 1 1 0%;
+  min-width: 0;
   display: flex;
   align-items: center;
   background: #fff;
@@ -727,7 +736,8 @@
 }
 
 .bcview__input {
-  flex: 1;
+  flex: 1 1 0%;
+  min-width: 0;
   border: none;
   outline: none;
   background: transparent;
@@ -1052,8 +1062,10 @@
 }
 
 .bcview-wrapper {
+  width: 100%;
   max-width: 1180px;
   margin-inline: auto;
+  box-sizing: border-box;
 }
 
 /*
@@ -1065,6 +1077,23 @@
 .section.bcview-container {
   scroll-margin-top: calc(var(--nav-height, 64px) + 16px);
   padding-top: calc(max(var(--nav-height, 64px), 90px) + 16px + env(safe-area-inset-top, 0px));
+}
+
+/*
+  Home page often places bcview in the same section as carousel. `.carousel-container`
+  uses flex column + align-items: flex-start, so siblings (e.g. .bcview-wrapper) shrink
+  to content width — the chat bar flex row then misaligns (white field short of purple bar).
+*/
+.section.carousel-container.bcview-container .bcview-wrapper {
+  align-self: stretch;
+  width: 100%;
+  max-width: 100%;
+}
+
+.section.carousel-container.bcview-container .bcview {
+  width: 100%;
+  align-self: stretch;
+  box-sizing: border-box;
 }
 
 /* --- surface & ambience --- */
@@ -1095,8 +1124,10 @@
 .bcview__shell {
   position: relative;
   z-index: 1;
+  width: 100%;
   max-width: 1040px;
   margin-inline: auto;
+  box-sizing: border-box;
 }
 
 .bcview__chat {
