@@ -78,7 +78,8 @@ html[dir="rtl"] .carousel-container .button-container button {
   display: inline;
 }
 
-.carousel-container .button-container a.button:any-link, button {
+.carousel-container .button-container a.button:any-link,
+.carousel-container .button-container button {
   margin: 0;
   margin-top:10px;
 }
@@ -266,7 +267,8 @@ html[dir="rtl"] .carousel .button-container .prev {
     padding-bottom: 40px;
   }
 
-  .carousel-container .button-container a.button:any-link, button {
+  .carousel-container .button-container a.button:any-link,
+.carousel-container .button-container button {
     font-size: 14px;
     font-weight: 400;
     line-height: 23px;
@@ -345,7 +347,8 @@ html[dir="rtl"] .carousel .button-container .prev {
     padding-bottom: 40px;
   }
 
-  .carousel-container .button-container a.button:any-link, button {
+  .carousel-container .button-container a.button:any-link,
+.carousel-container .button-container button {
     margin: 0;
   }
 
@@ -378,7 +381,8 @@ html[dir="rtl"] .carousel .button-container .prev {
     padding: 96px 10px 96px 0;
   }
 
-  .carousel-container .button-container a.button:any-link, button {
+  .carousel-container .button-container a.button:any-link,
+.carousel-container .button-container button {
     font-size: 16px;
     font-weight: 400;
     line-height: 24px;
