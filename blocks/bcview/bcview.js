@@ -26,7 +26,7 @@ const STATIC = {
     "Choose an option or tell us what interests you and we'll point you in the right direction.",
   cards: [
     {
-      title: 'Explore vehicles',
+      title: 'Explore our lineup',
       description: 'Browse models, trims, and features tailored to you.',
       image:
         'https://carvelo.adobedemosystem.com/en/models/media_12fddf2e4fe309d58bebd165ca936d9169fb1df98.png?width=900&format=webply&optimize=medium',
